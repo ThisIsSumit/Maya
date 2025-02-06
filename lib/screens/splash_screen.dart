@@ -10,7 +10,8 @@ class SplashScreen extends StatefulWidget {
   _SplashScreenState createState() => _SplashScreenState();
 }
 
-class _SplashScreenState extends State<SplashScreen> with SingleTickerProviderStateMixin {
+class _SplashScreenState extends State<SplashScreen>
+    with SingleTickerProviderStateMixin {
   late AnimationController _controller;
   late Animation<double> _scaleAnimation;
   late Animation<double> _opacityAnimation;
@@ -57,7 +58,7 @@ class _SplashScreenState extends State<SplashScreen> with SingleTickerProviderSt
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.blueAccent,
+      backgroundColor: Color.fromRGBO(24, 25, 38, 1),
       body: Center(
         child: AnimatedBuilder(
           animation: _controller,
@@ -69,7 +70,13 @@ class _SplashScreenState extends State<SplashScreen> with SingleTickerProviderSt
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    const FlutterLogo(size: 100),
+                    SizedBox(
+                      height: 100,
+                      width: 100,
+                      child: Image.asset(
+                        "assests/images/may_aegis_logo.png",
+                      ),
+                    ),
                     const SizedBox(height: 20),
                     SpinKitFadingCircle(
                       color: Colors.white,

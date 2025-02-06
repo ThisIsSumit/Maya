@@ -1,7 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:fl_chart/fl_chart.dart';
+import 'package:may_aegis/screens/app_list_sccreen.dart';
 
-class HomeScreen extends StatelessWidget {
+class HomeScreen extends StatefulWidget {
+  @override
+  _HomeScreenState createState() => _HomeScreenState();
+}
+
+class _HomeScreenState extends State<HomeScreen> {
   // Dummy data for resource usage
   final Map<String, double> resourceUsage = {
     'Microphone': 40,
@@ -9,7 +15,7 @@ class HomeScreen extends StatelessWidget {
     'Location': 30,
   };
 
-  // Dummy data for apps using each resource
+  // Dummy data
   final Map<String, List<String>> appsUsingResource = {
     'Microphone': ['App A', 'App B', 'App C'],
     'Camera': ['App D', 'App E'],
@@ -19,35 +25,37 @@ class HomeScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Resource Usage'),
-      ),
+      appBar: AppBar(title: const Text('Resource Usage')),
       body: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
           Expanded(
-            child: PieChart(
-              PieChartData(
-                sections: _buildPieChartSections(context),
-                centerSpaceRadius: 50,
+            child: Padding(
+              padding: const EdgeInsets.all(16.0),
+              child: PieChart(
+                PieChartData(
+                  sections: _buildPieChartSections(),
+                  centerSpaceRadius: 50,
+                  sectionsSpace: 2,
+                ),
               ),
             ),
           ),
-          const SizedBox(height: 20),
           const Padding(
-            padding: EdgeInsets.symmetric(horizontal: 16),
+            padding: EdgeInsets.all(12.0),
             child: Text(
-              'Tap a section to see apps using that resource',
-              textAlign: TextAlign.center,
+              'Tap on a section to see apps using that resource',
               style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+              textAlign: TextAlign.center,
             ),
           ),
-          const SizedBox(height: 20),
         ],
       ),
     );
   }
 
-  List<PieChartSectionData> _buildPieChartSections(BuildContext context) {
+  List<PieChartSectionData> _buildPieChartSections() {
     return resourceUsage.entries.map((entry) {
       final resource = entry.key;
       final percentage = entry.value;
@@ -57,29 +65,31 @@ class HomeScreen extends StatelessWidget {
         color: color,
         value: percentage,
         title: '$percentage%',
-        radius: 100,
+        radius: 80,
         titleStyle: const TextStyle(
-          fontSize: 16,
+          fontSize: 14,
           fontWeight: FontWeight.bold,
           color: Colors.white,
         ),
-        badgeWidget: _buildBadge(context, resource, color),
-        badgePositionPercentageOffset: 1.2,
+        badgeWidget: _buildBadge(resource, color),
+        badgePositionPercentageOffset: 1.1,
       );
     }).toList();
   }
 
-  Widget _buildBadge(BuildContext context, String resource, Color color) {
+  Widget _buildBadge(String resource, Color color) {
     return GestureDetector(
-      onTap: () => _navigateToAppList(context, resource),
+      onTap: () {
+        _navigateToAppList(resource);
+      },
       child: Container(
-        padding: const EdgeInsets.all(8),
+        padding: const EdgeInsets.all(20),
         decoration: BoxDecoration(
           color: color,
           shape: BoxShape.circle,
         ),
         child: Text(
-          resource[0], // Display the first letter of the resource
+          resource, // Display the first letter of the resource
           style: const TextStyle(
             fontSize: 16,
             fontWeight: FontWeight.bold,
@@ -90,7 +100,7 @@ class HomeScreen extends StatelessWidget {
     );
   }
 
-  void _navigateToAppList(BuildContext context, String resource) {
+  void _navigateToAppList(String resource) {
     final apps = appsUsingResource[resource] ?? [];
     Navigator.push(
       context,
@@ -114,34 +124,4 @@ class HomeScreen extends StatelessWidget {
   }
 }
 
-class AppListScreen extends StatelessWidget {
-  final String resource;
-  final List<String> apps;
 
-  const AppListScreen({Key? key, required this.resource, required this.apps}) : super(key: key);
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: Text('Apps Using $resource'),
-      ),
-      body: apps.isEmpty
-          ? const Center(
-              child: Text(
-                'No apps found',
-                style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-              ),
-            )
-          : ListView.builder(
-              itemCount: apps.length,
-              itemBuilder: (context, index) {
-                return ListTile(
-                  title: Text(apps[index]),
-                  leading: const Icon(Icons.apps),
-                );
-              },
-            ),
-    );
-  }
-}
