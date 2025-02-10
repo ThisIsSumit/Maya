@@ -72,7 +72,7 @@ class _SplashScreenState extends State<SplashScreen>
                   children: [
                     SizedBox(
                       height: 100,
-                      width: 100,
+                      width: 300,
                       child: Image.asset(
                         "assests/images/may_aegis_logo.png",
                       ),
