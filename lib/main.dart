@@ -1,8 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
-import 'package:flutter_animate/flutter_animate.dart';
 import 'package:may_aegis/screens/splash_screen.dart';
-import 'package:permission_handler/permission_handler.dart';
+
 
 void main() {
   runApp(const PermissionManagerApp());

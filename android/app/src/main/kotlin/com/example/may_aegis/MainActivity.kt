@@ -10,12 +10,16 @@ import android.net.Uri
 import android.os.Bundle
 import androidx.core.content.ContextCompat
 import android.content.pm.ApplicationInfo
+import android.os.Build
 import android.provider.MediaStore
+import androidx.annotation.RequiresApi
+import io.flutter.Log
 
 class MainActivity: FlutterActivity() {
     private val CHANNEL = "com.example.permission_manager/permissions"
     private lateinit var methodChannel: MethodChannel
 
+    @RequiresApi(Build.VERSION_CODES.GINGERBREAD)
     override fun configureFlutterEngine(flutterEngine: FlutterEngine) {
         super.configureFlutterEngine(flutterEngine)
 
@@ -64,24 +68,13 @@ class MainActivity: FlutterActivity() {
                 val applicationInfo = pm.getApplicationInfo(packageName, 0)
                 val hasPermission = checkPermissionForApp(packageName, permissionType)
 
-                // Get app icon as bytes
-                val icon = try {
-                    applicationInfo.loadIcon(pm)
-                    // Convert drawable to bytes if needed
-                    null // Placeholder for icon conversion
-                } catch (e: Exception) {
-                    null
-                }
-
-                val isSystemApp = (applicationInfo.flags and ApplicationInfo.FLAG_SYSTEM) != 0
-
                 apps.add(
                     mapOf(
                         "packageName" to packageName,
                         "appName" to pm.getApplicationLabel(applicationInfo).toString(),
                         "hasPermission" to hasPermission,
-                        "isSystemApp" to isSystemApp //Use the boolean value directly
-                    )
+                        "isSystemApp" to ((applicationInfo.flags and ApplicationInfo.FLAG_SYSTEM) != 0)
+                    ) as Map<String, Any> // Ensure this is a Map<String, Any>
                 )
             } catch (e: Exception) {
                 e.printStackTrace()
@@ -90,6 +83,7 @@ class MainActivity: FlutterActivity() {
 
         return apps
     }
+
 
     private fun checkPermissionForApp(packageName: String, permission: String): Boolean {
         return try {
@@ -100,6 +94,7 @@ class MainActivity: FlutterActivity() {
         }
     }
 
+    @RequiresApi(Build.VERSION_CODES.GINGERBREAD)
     private fun openAppSettings(packageName: String) {
         val intent = Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS)
         intent.data = Uri.fromParts("package", packageName, null)

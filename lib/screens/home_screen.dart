@@ -14,7 +14,7 @@ class HomeScreen extends StatefulWidget {
 
 class _HomeScreenState extends State<HomeScreen> {
   static const platform = MethodChannel('com.example.permission_manager/permissions');
-  
+
   final Map<String, Map<String, dynamic>> _permissionData = {
     'android.permission.CAMERA': {
       'icon': Icons.camera_alt,
@@ -50,9 +50,12 @@ class _HomeScreenState extends State<HomeScreen> {
           'getAppsWithPermission',
           {'permission': permissionType},
         );
-        
+
+        // Ensure the apps are cast correctly
         setState(() {
-          _permissionData[permissionType]?['apps'] = List<Map<String, dynamic>>.from(apps);
+          _permissionData[permissionType]?['apps'] = List<Map<String, dynamic>>.from(
+            apps.map((app) => Map<String, dynamic>.from(app))
+          );
         });
       }
     } catch (e) {
