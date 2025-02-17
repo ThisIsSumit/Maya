@@ -13,7 +13,8 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> {
-  static const platform = MethodChannel('com.example.permission_manager/permissions');
+  static const platform =
+      MethodChannel('com.example.permission_manager/permissions');
 
   final Map<String, Map<String, dynamic>> _permissionData = {
     'android.permission.CAMERA': {
@@ -53,9 +54,9 @@ class _HomeScreenState extends State<HomeScreen> {
 
         // Ensure the apps are cast correctly
         setState(() {
-          _permissionData[permissionType]?['apps'] = List<Map<String, dynamic>>.from(
-            apps.map((app) => Map<String, dynamic>.from(app))
-          );
+          _permissionData[permissionType]?['apps'] =
+              List<Map<String, dynamic>>.from(
+                  apps.map((app) => Map<String, dynamic>.from(app)));
         });
       }
     } catch (e) {
@@ -67,7 +68,8 @@ class _HomeScreenState extends State<HomeScreen> {
 
   Future<void> _openAppSettings(String packageName) async {
     try {
-      await platform.invokeMethod('openAppSettings', {'packageName': packageName});
+      await platform
+          .invokeMethod('openAppSettings', {'packageName': packageName});
     } catch (e) {
       debugPrint('Error opening app settings: $e');
     }
@@ -125,25 +127,6 @@ class _HomeScreenState extends State<HomeScreen> {
             ],
           ),
         ),
-      ),
-      bottomNavigationBar: NavigationBar(
-        destinations: const [
-          NavigationDestination(
-            icon: Icon(Icons.dashboard),
-            label: 'Dashboard',
-          ),
-          NavigationDestination(
-            icon: Icon(Icons.apps),
-            label: 'Permissions',
-          ),
-          NavigationDestination(
-            icon: Icon(Icons.analytics),
-            label: 'Analytics',
-          ),
-        ],
-        onDestinationSelected: (index) {
-          // TODO: Implement navigation
-        },
       ),
     );
   }

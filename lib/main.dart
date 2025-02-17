@@ -1,37 +1,22 @@
 import 'package:flutter/material.dart';
-import 'package:may_aegis/screens/splash_screen.dart';
-
+import 'package:may_aegis/screens/navigation_screen.dart';
 
 void main() {
-  runApp(const PermissionManagerApp());
+  runApp(const MyApp());
 }
 
-class PermissionManagerApp extends StatelessWidget {
-  const PermissionManagerApp({super.key});
+class MyApp extends StatelessWidget {
+  const MyApp({super.key});
 
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
       title: 'Permission Manager',
       theme: ThemeData(
-        primarySwatch: Colors.blue,
-        brightness: Brightness.light,
+        colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
         useMaterial3: true,
       ),
-      darkTheme: ThemeData(
-        brightness: Brightness.dark,
-        useMaterial3: true,
-      ),
-      home: const SplashScreen(),
+      home: const NavigationScreen(),
     );
   }
 }
-
-
-
-
-
-
-
-
-
