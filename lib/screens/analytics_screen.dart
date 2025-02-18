@@ -26,32 +26,31 @@ class _AnalyticsScreenState extends State<AnalyticsScreen> {
     _loadAnalyticsData();
   }
 
- Future<void> _loadAnalyticsData() async {
-  setState(() => _isLoading = true);
+  Future<void> _loadAnalyticsData() async {
+    setState(() => _isLoading = true);
 
-  try {
-    final resourceUsage =
-        await platform.invokeMethod('getResourceUsageDistribution');
-    final dailyUsage = await platform.invokeMethod('getDailyUsage');
-    final mostActiveDays = await platform.invokeMethod('getMostActiveDays');
+    try {
+      final resourceUsage =
+          await platform.invokeMethod('getResourceUsageDistribution');
+      final dailyUsage = await platform.invokeMethod('getDailyUsage');
+      final mostActiveDays = await platform.invokeMethod('getMostActiveDays');
 
-    setState(() {
-      // Ensure proper casting
-      _resourceUsage = Map<String, double>.from(
-          resourceUsage.cast<String, dynamic>().map((key, value) => MapEntry(key, value.toDouble())));
-      _dailyUsage = List<Map<String, dynamic>>.from(
-          dailyUsage.map((item) => Map<String, dynamic>.from(item)));
-      _mostActiveDays = List<Map<String, dynamic>>.from(
-          mostActiveDays.map((item) => Map<String, dynamic>.from(item)));
-      _isLoading = false;
-    });
-  } catch (e) {
-    debugPrint('Error loading analytics data: $e');
-    setState(() => _isLoading = false);
+      setState(() {
+        // Ensure proper casting
+        _resourceUsage = Map<String, double>.from(resourceUsage
+            .cast<String, dynamic>()
+            .map((key, value) => MapEntry(key, value.toDouble())));
+        _dailyUsage = List<Map<String, dynamic>>.from(
+            dailyUsage.map((item) => Map<String, dynamic>.from(item)));
+        _mostActiveDays = List<Map<String, dynamic>>.from(
+            mostActiveDays.map((item) => Map<String, dynamic>.from(item)));
+        _isLoading = false;
+      });
+    } catch (e) {
+      debugPrint('Error loading analytics data: $e');
+      setState(() => _isLoading = false);
+    }
   }
-}
-
-
 
   @override
   Widget build(BuildContext context) {
@@ -110,92 +109,92 @@ class _AnalyticsScreenState extends State<AnalyticsScreen> {
                 ),
               ),
             ),
-            // const SizedBox(height: 40),
-            // _buildSectionHeader('Daily Resource Usage', Icons.timeline)
-            //     .animate()
-            //     .fadeIn(delay: const Duration(milliseconds: 800))
-            //     .slideY(begin: 0.2, end: 0),
-            // const SizedBox(height: 20),
-            // Card(
-            //   elevation: 4,
-            //   shadowColor: theme.shadowColor.withOpacity(0.2),
-            //   child: Padding(
-            //     padding: const EdgeInsets.all(16),
-            //     child: Column(
-            //       children: [
-            //         SizedBox(
-            //           height: 200,
-            //           child: LineChart(
-            //             LineChartData(
-            //               gridData: FlGridData(
-            //                 show: true,
-            //                 drawVerticalLine: false,
-            //                 horizontalInterval: 5,
-            //                 getDrawingHorizontalLine: (value) {
-            //                   return FlLine(
-            //                     color: theme.dividerColor,
-            //                     strokeWidth: 0.5,
-            //                   );
-            //                 },
-            //               ),
-            //               titlesData: FlTitlesData(
-            //                 bottomTitles: AxisTitles(
-            //                   sideTitles: SideTitles(
-            //                     showTitles: true,
-            //                     getTitlesWidget: (value, meta) {
-            //                       if (value % 2 == 0) {
-            //                         final date = DateTime.now().subtract(
-            //                             Duration(days: (14 - value).toInt()));
-            //                         return Padding(
-            //                           padding: const EdgeInsets.only(top: 8.0),
-            //                           child: Text(
-            //                             DateFormat('MM/dd').format(date),
-            //                             style: theme.textTheme.bodySmall,
-            //                           ),
-            //                         );
-            //                       }
-            //                       return const Text('');
-            //                     },
-            //                   ),
-            //                 ),
-            //                 leftTitles: AxisTitles(
-            //                   sideTitles: SideTitles(
-            //                     showTitles: true,
-            //                     getTitlesWidget: (value, meta) {
-            //                       return Padding(
-            //                         padding: const EdgeInsets.only(right: 8.0),
-            //                         child: Text(
-            //                           value.toInt().toString(),
-            //                           style: theme.textTheme.bodySmall,
-            //                         ),
-            //                       );
-            //                     },
-            //                   ),
-            //                 ),
-            //                 rightTitles: const AxisTitles(
-            //                   sideTitles: SideTitles(showTitles: false),
-            //                 ),
-            //                 topTitles: const AxisTitles(
-            //                   sideTitles: SideTitles(showTitles: false),
-            //                 ),
-            //               ),
-            //               lineBarsData: _getLineChartData(),
-            //               borderData: FlBorderData(show: false),
-            //             ),
-            //           ),
-            //         ).animate().slideX(
-            //               delay: const Duration(milliseconds: 1000),
-            //               duration: const Duration(milliseconds: 500),
-            //             ),
-            //         const SizedBox(height: 16),
-            //         _buildLineChartLegend().animate().fadeIn(
-            //               delay: const Duration(milliseconds: 1200),
-            //               duration: const Duration(milliseconds: 500),
-            //             ),
-            //       ],
-            //     ),
-            //   ),
-            // ),
+            const SizedBox(height: 40),
+            _buildSectionHeader('Daily Resource Usage', Icons.timeline)
+                .animate()
+                .fadeIn(delay: const Duration(milliseconds: 800))
+                .slideY(begin: 0.2, end: 0),
+            const SizedBox(height: 20),
+            Card(
+              elevation: 4,
+              shadowColor: theme.shadowColor.withOpacity(0.2),
+              child: Padding(
+                padding: const EdgeInsets.all(16),
+                child: Column(
+                  children: [
+                    SizedBox(
+                      height: 200,
+                      child: LineChart(
+                        LineChartData(
+                          gridData: FlGridData(
+                            show: true,
+                            drawVerticalLine: false,
+                            horizontalInterval: 5,
+                            getDrawingHorizontalLine: (value) {
+                              return FlLine(
+                                color: theme.dividerColor,
+                                strokeWidth: 0.5,
+                              );
+                            },
+                          ),
+                          titlesData: FlTitlesData(
+                            bottomTitles: AxisTitles(
+                              sideTitles: SideTitles(
+                                showTitles: true,
+                                getTitlesWidget: (value, meta) {
+                                  if (value % 2 == 0) {
+                                    final date = DateTime.now().subtract(
+                                        Duration(days: (14 - value).toInt()));
+                                    return Padding(
+                                      padding: const EdgeInsets.only(top: 8.0),
+                                      child: Text(
+                                        DateFormat('MM/dd').format(date),
+                                        style: theme.textTheme.bodySmall,
+                                      ),
+                                    );
+                                  }
+                                  return const Text('');
+                                },
+                              ),
+                            ),
+                            leftTitles: AxisTitles(
+                              sideTitles: SideTitles(
+                                showTitles: true,
+                                getTitlesWidget: (value, meta) {
+                                  return Padding(
+                                    padding: const EdgeInsets.only(right: 8.0),
+                                    child: Text(
+                                      value.toInt().toString(),
+                                      style: theme.textTheme.bodySmall,
+                                    ),
+                                  );
+                                },
+                              ),
+                            ),
+                            rightTitles: const AxisTitles(
+                              sideTitles: SideTitles(showTitles: false),
+                            ),
+                            topTitles: const AxisTitles(
+                              sideTitles: SideTitles(showTitles: false),
+                            ),
+                          ),
+                          lineBarsData: _getLineChartData(),
+                          borderData: FlBorderData(show: false),
+                        ),
+                      ),
+                    ).animate().slideX(
+                          delay: const Duration(milliseconds: 1000),
+                          duration: const Duration(milliseconds: 500),
+                        ),
+                    const SizedBox(height: 16),
+                    _buildLineChartLegend().animate().fadeIn(
+                          delay: const Duration(milliseconds: 1200),
+                          duration: const Duration(milliseconds: 500),
+                        ),
+                  ],
+                ),
+              ),
+            ),
             const SizedBox(height: 40),
             _buildSectionHeader('Most Active Days', Icons.calendar_today)
                 .animate()
@@ -260,10 +259,8 @@ class _AnalyticsScreenState extends State<AnalyticsScreen> {
       return Container(
         padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
         decoration: BoxDecoration(
-          // ignore: deprecated_member_use
           color: colors[index].withOpacity(0.1),
           borderRadius: BorderRadius.circular(20),
-          // ignore: deprecated_member_use
           border: Border.all(color: colors[index].withOpacity(0.3)),
         ),
         child: Row(
@@ -279,14 +276,26 @@ class _AnalyticsScreenState extends State<AnalyticsScreen> {
             ),
             const SizedBox(width: 8),
             Text(
-              entry.key,
-              // ignore: deprecated_member_use
+              _getPermissionName(entry.key), // Use the mapping function here
               style: TextStyle(color: colors[index].withOpacity(0.8)),
             ),
           ],
         ),
       );
     }).toList();
+  }
+
+  String _getPermissionName(String permission) {
+    switch (permission) {
+      case 'android.permission.CAMERA':
+        return 'Camera';
+      case 'android.permission.RECORD_AUDIO':
+        return 'Microphone';
+      case 'android.permission.ACCESS_FINE_LOCATION':
+        return 'Location';
+      default:
+        return permission;
+    }
   }
 
   List<LineChartBarData> _getLineChartData() {
@@ -373,7 +382,7 @@ class _AnalyticsScreenState extends State<AnalyticsScreen> {
               ),
               const SizedBox(width: 8),
               Text(
-                entry.key,
+                _getPermissionName(entry.key),
                 style: TextStyle(color: colors[index].withOpacity(0.8)),
               ),
             ],

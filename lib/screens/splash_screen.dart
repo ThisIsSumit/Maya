@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
-import 'package:may_aegis/screens/home_screen.dart';
 import 'package:may_aegis/screens/navigation_screen.dart';
 
 class SplashScreen extends StatefulWidget {
@@ -39,7 +38,7 @@ class _SplashScreenState extends State<SplashScreen> {
               .shake(delay: 200.ms),
             const SizedBox(height: 20),
             Text(
-              'Permission Manager',
+              'May Aegis',
               style: Theme.of(context).textTheme.headlineMedium,
             ).animate()
               .fadeIn(delay: 800.ms)
