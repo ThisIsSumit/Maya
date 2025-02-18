@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:fl_chart/fl_chart.dart';
 import 'package:intl/intl.dart';
 import 'package:flutter_animate/flutter_animate.dart';
+import 'package:flutter/services.dart';
 
 class AnalyticsScreen extends StatefulWidget {
   const AnalyticsScreen({super.key});
@@ -11,21 +12,46 @@ class AnalyticsScreen extends StatefulWidget {
 }
 
 class _AnalyticsScreenState extends State<AnalyticsScreen> {
-  final Map<String, double> _resourceUsage = {
-    'Camera': 45,
-    'Microphone': 30,
-    'Location': 25,
-  };
+  static const platform =
+      MethodChannel('com.example.permission_manager/permissions');
 
-  final List<Map<String, dynamic>> _dailyUsage = [
-    {
-      'date': DateTime.now().subtract(const Duration(days: 13)),
-      'camera': 12,
-      'microphone': 8,
-      'location': 5,
-    },
-    // Add more daily data here...
-  ];
+  Map<String, double> _resourceUsage = {};
+  List<Map<String, dynamic>> _dailyUsage = [];
+  List<Map<String, dynamic>> _mostActiveDays = [];
+  bool _isLoading = true;
+
+  @override
+  void initState() {
+    super.initState();
+    _loadAnalyticsData();
+  }
+
+ Future<void> _loadAnalyticsData() async {
+  setState(() => _isLoading = true);
+
+  try {
+    final resourceUsage =
+        await platform.invokeMethod('getResourceUsageDistribution');
+    final dailyUsage = await platform.invokeMethod('getDailyUsage');
+    final mostActiveDays = await platform.invokeMethod('getMostActiveDays');
+
+    setState(() {
+      // Ensure proper casting
+      _resourceUsage = Map<String, double>.from(
+          resourceUsage.cast<String, dynamic>().map((key, value) => MapEntry(key, value.toDouble())));
+      _dailyUsage = List<Map<String, dynamic>>.from(
+          dailyUsage.map((item) => Map<String, dynamic>.from(item)));
+      _mostActiveDays = List<Map<String, dynamic>>.from(
+          mostActiveDays.map((item) => Map<String, dynamic>.from(item)));
+      _isLoading = false;
+    });
+  } catch (e) {
+    debugPrint('Error loading analytics data: $e');
+    setState(() => _isLoading = false);
+  }
+}
+
+
 
   @override
   Widget build(BuildContext context) {
@@ -71,7 +97,7 @@ class _AnalyticsScreenState extends State<AnalyticsScreen> {
                           delay: const Duration(milliseconds: 400),
                           duration: const Duration(milliseconds: 500),
                         ),
-                    const SizedBox(height: 20),
+                    const SizedBox(height: 40),
                     Wrap(
                       spacing: 16,
                       runSpacing: 8,
@@ -84,92 +110,92 @@ class _AnalyticsScreenState extends State<AnalyticsScreen> {
                 ),
               ),
             ),
-            const SizedBox(height: 40),
-            _buildSectionHeader('Daily Resource Usage', Icons.timeline)
-                .animate()
-                .fadeIn(delay: const Duration(milliseconds: 800))
-                .slideY(begin: 0.2, end: 0),
-            const SizedBox(height: 20),
-            Card(
-              elevation: 4,
-              shadowColor: theme.shadowColor.withOpacity(0.2),
-              child: Padding(
-                padding: const EdgeInsets.all(16),
-                child: Column(
-                  children: [
-                    SizedBox(
-                      height: 200,
-                      child: LineChart(
-                        LineChartData(
-                          gridData: FlGridData(
-                            show: true,
-                            drawVerticalLine: false,
-                            horizontalInterval: 5,
-                            getDrawingHorizontalLine: (value) {
-                              return FlLine(
-                                color: theme.dividerColor,
-                                strokeWidth: 0.5,
-                              );
-                            },
-                          ),
-                          titlesData: FlTitlesData(
-                            bottomTitles: AxisTitles(
-                              sideTitles: SideTitles(
-                                showTitles: true,
-                                getTitlesWidget: (value, meta) {
-                                  if (value % 2 == 0) {
-                                    final date = DateTime.now().subtract(
-                                        Duration(days: (14 - value).toInt()));
-                                    return Padding(
-                                      padding: const EdgeInsets.only(top: 8.0),
-                                      child: Text(
-                                        DateFormat('MM/dd').format(date),
-                                        style: theme.textTheme.bodySmall,
-                                      ),
-                                    );
-                                  }
-                                  return const Text('');
-                                },
-                              ),
-                            ),
-                            leftTitles: AxisTitles(
-                              sideTitles: SideTitles(
-                                showTitles: true,
-                                getTitlesWidget: (value, meta) {
-                                  return Padding(
-                                    padding: const EdgeInsets.only(right: 8.0),
-                                    child: Text(
-                                      value.toInt().toString(),
-                                      style: theme.textTheme.bodySmall,
-                                    ),
-                                  );
-                                },
-                              ),
-                            ),
-                            rightTitles: const AxisTitles(
-                              sideTitles: SideTitles(showTitles: false),
-                            ),
-                            topTitles: const AxisTitles(
-                              sideTitles: SideTitles(showTitles: false),
-                            ),
-                          ),
-                          lineBarsData: _getLineChartData(),
-                          borderData: FlBorderData(show: false),
-                        ),
-                      ),
-                    ).animate().slideX(
-                          delay: const Duration(milliseconds: 1000),
-                          duration: const Duration(milliseconds: 500),
-                        ),
-                    const SizedBox(height: 16),
-                    _buildLineChartLegend().animate().fadeIn(
-                          delay: const Duration(milliseconds: 1200),
-                          duration: const Duration(milliseconds: 500),
-                        ),
-                  ],
-                ),
-              ),
-            ),
+            // const SizedBox(height: 40),
+            // _buildSectionHeader('Daily Resource Usage', Icons.timeline)
+            //     .animate()
+            //     .fadeIn(delay: const Duration(milliseconds: 800))
+            //     .slideY(begin: 0.2, end: 0),
+            // const SizedBox(height: 20),
+            // Card(
+            //   elevation: 4,
+            //   shadowColor: theme.shadowColor.withOpacity(0.2),
+            //   child: Padding(
+            //     padding: const EdgeInsets.all(16),
+            //     child: Column(
+            //       children: [
+            //         SizedBox(
+            //           height: 200,
+            //           child: LineChart(
+            //             LineChartData(
+            //               gridData: FlGridData(
+            //                 show: true,
+            //                 drawVerticalLine: false,
+            //                 horizontalInterval: 5,
+            //                 getDrawingHorizontalLine: (value) {
+            //                   return FlLine(
+            //                     color: theme.dividerColor,
+            //                     strokeWidth: 0.5,
+            //                   );
+            //                 },
+            //               ),
+            //               titlesData: FlTitlesData(
+            //                 bottomTitles: AxisTitles(
+            //                   sideTitles: SideTitles(
+            //                     showTitles: true,
+            //                     getTitlesWidget: (value, meta) {
+            //                       if (value % 2 == 0) {
+            //                         final date = DateTime.now().subtract(
+            //                             Duration(days: (14 - value).toInt()));
+            //                         return Padding(
+            //                           padding: const EdgeInsets.only(top: 8.0),
+            //                           child: Text(
+            //                             DateFormat('MM/dd').format(date),
+            //                             style: theme.textTheme.bodySmall,
+            //                           ),
+            //                         );
+            //                       }
+            //                       return const Text('');
+            //                     },
+            //                   ),
+            //                 ),
+            //                 leftTitles: AxisTitles(
+            //                   sideTitles: SideTitles(
+            //                     showTitles: true,
+            //                     getTitlesWidget: (value, meta) {
+            //                       return Padding(
+            //                         padding: const EdgeInsets.only(right: 8.0),
+            //                         child: Text(
+            //                           value.toInt().toString(),
+            //                           style: theme.textTheme.bodySmall,
+            //                         ),
+            //                       );
+            //                     },
+            //                   ),
+            //                 ),
+            //                 rightTitles: const AxisTitles(
+            //                   sideTitles: SideTitles(showTitles: false),
+            //                 ),
+            //                 topTitles: const AxisTitles(
+            //                   sideTitles: SideTitles(showTitles: false),
+            //                 ),
+            //               ),
+            //               lineBarsData: _getLineChartData(),
+            //               borderData: FlBorderData(show: false),
+            //             ),
+            //           ),
+            //         ).animate().slideX(
+            //               delay: const Duration(milliseconds: 1000),
+            //               duration: const Duration(milliseconds: 500),
+            //             ),
+            //         const SizedBox(height: 16),
+            //         _buildLineChartLegend().animate().fadeIn(
+            //               delay: const Duration(milliseconds: 1200),
+            //               duration: const Duration(milliseconds: 500),
+            //             ),
+            //       ],
+            //     ),
+            //   ),
+            // ),
             const SizedBox(height: 40),
             _buildSectionHeader('Most Active Days', Icons.calendar_today)
                 .animate()
@@ -200,11 +226,10 @@ class _AnalyticsScreenState extends State<AnalyticsScreen> {
   }
 
   List<PieChartSectionData> _getChartSections() {
-    // Camera (45%) - darkest, Microphone (30%) - medium, Location (25%) - lightest
     final List<Color> colors = [
-      Colors.deepPurple.shade900, // Camera - most used
-      Colors.deepPurple.shade700, // Microphone - medium usage
-      Colors.deepPurple.shade500, // Location - least used
+      Colors.deepPurple.shade900,
+      Colors.deepPurple.shade700,
+      Colors.deepPurple.shade500,
     ];
 
     return _resourceUsage.entries.map((entry) {
@@ -225,9 +250,9 @@ class _AnalyticsScreenState extends State<AnalyticsScreen> {
 
   List<Widget> _buildLegendItems() {
     final List<Color> colors = [
-      Colors.deepPurple.shade900, // Camera
-      Colors.deepPurple.shade700, // Microphone
-      Colors.deepPurple.shade500, // Location
+      Colors.deepPurple.shade900,
+      Colors.deepPurple.shade700,
+      Colors.deepPurple.shade500,
     ];
 
     return _resourceUsage.entries.map((entry) {
@@ -235,8 +260,10 @@ class _AnalyticsScreenState extends State<AnalyticsScreen> {
       return Container(
         padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
         decoration: BoxDecoration(
+          // ignore: deprecated_member_use
           color: colors[index].withOpacity(0.1),
           borderRadius: BorderRadius.circular(20),
+          // ignore: deprecated_member_use
           border: Border.all(color: colors[index].withOpacity(0.3)),
         ),
         child: Row(
@@ -253,6 +280,7 @@ class _AnalyticsScreenState extends State<AnalyticsScreen> {
             const SizedBox(width: 8),
             Text(
               entry.key,
+              // ignore: deprecated_member_use
               style: TextStyle(color: colors[index].withOpacity(0.8)),
             ),
           ],
@@ -262,11 +290,10 @@ class _AnalyticsScreenState extends State<AnalyticsScreen> {
   }
 
   List<LineChartBarData> _getLineChartData() {
-    // Using complementary colors for better visual distinction in the line chart
     final List<Color> colors = [
-      Colors.teal.shade600, // Camera - vibrant teal
-      Colors.amber.shade600, // Microphone - warm amber
-      Colors.pink.shade400, // Location - soft pink
+      Colors.teal.shade600,
+      Colors.amber.shade600,
+      Colors.pink.shade400,
     ];
 
     final resources = ['camera', 'microphone', 'location'];
@@ -302,6 +329,7 @@ class _AnalyticsScreenState extends State<AnalyticsScreen> {
           show: true,
           gradient: LinearGradient(
             colors: [
+              // ignore: deprecated_member_use
               color.withOpacity(0.2),
               color.withOpacity(0.0),
             ],
@@ -362,8 +390,15 @@ class _AnalyticsScreenState extends State<AnalyticsScreen> {
       child: ListView.builder(
         shrinkWrap: true,
         physics: const NeverScrollableScrollPhysics(),
-        itemCount: 5,
+        itemCount: _mostActiveDays.length,
         itemBuilder: (context, index) {
+          final dayData = _mostActiveDays[index];
+          final date = DateTime.fromMillisecondsSinceEpoch(dayData['date']);
+
+          final cameraCount = dayData['camera'] ?? 0;
+          final microphoneCount = dayData['microphone'] ?? 0;
+          final locationCount = dayData['location'] ?? 0;
+
           return ListTile(
             leading: CircleAvatar(
               backgroundColor: theme.colorScheme.primary.withOpacity(0.1),
@@ -374,11 +409,11 @@ class _AnalyticsScreenState extends State<AnalyticsScreen> {
               ),
             ),
             title: Text(
-              'March ${15 - index}, 2024',
+              DateFormat('MMMM d, y').format(date),
               style: theme.textTheme.titleMedium,
             ),
             subtitle: Text(
-              'Camera: 25 times, Microphone: 15 times, Location: 10 times',
+              'Camera: $cameraCount times, Microphone: $microphoneCount times, Location: $locationCount times',
               style: theme.textTheme.bodySmall,
             ),
           )
